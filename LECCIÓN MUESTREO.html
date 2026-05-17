@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calidad 4.0 UNLa: Lección de Muestreo de Aceptación</title>
+<style>
+:root{
+  --vino:#97002e; --vino2:#7b0028; --rojo:#c62828; --gris:#f5f6f8; --gris2:#e8eaf0; --texto:#111827; --muted:#64748b; --verde:#0f8a4b; --amarillo:#f59e0b; --azul:#0f4c81; --blanco:#fff;
+  --shadow:0 14px 28px rgba(50,0,20,.10); --radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--gris);color:var(--texto);}
+header{background:#fff;border-bottom:1px solid #dde2ea;display:flex;align-items:center;gap:20px;padding:18px 26px;position:sticky;top:0;z-index:5;}
+.logo{width:78px;height:78px;border-radius:20px;background:var(--vino);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;box-shadow:0 12px 25px rgba(151,0,46,.25)}
+.headText h1{font-size:25px;color:var(--vino);margin:0 0 7px;font-weight:900}.headText h2{font-size:16px;color:var(--vino2);margin:0 0 7px}.headText p{margin:0;color:#546173;font-size:14px}.headText b{font-size:14px;color:#111}
+.topBtns{margin-left:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;background:#fff;border:1px solid #dbe1ea}.btn.primary{background:var(--vino);color:white;border-color:var(--vino)}.btn.soft{background:#faeef3;color:var(--vino);border-color:#e8c1cf}.btn.red{background:#c62828;color:#fff;border-color:#c62828}.btn.green{background:var(--verde);color:#fff;border-color:var(--verde)}
+.layout{display:grid;grid-template-columns:290px 1fr;gap:24px;padding:24px;}.sidebar{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;align-self:start;position:sticky;top:125px}.navitem{display:flex;gap:10px;align-items:center;padding:14px 14px;border-radius:16px;color:#293241;cursor:pointer;font-weight:800;margin-bottom:8px;border:1px solid transparent}.navitem:hover{background:#f9edf2}.navitem.active{background:var(--vino);color:white}.navitem small{margin-left:auto;opacity:.8}.progressBox{margin-top:18px;padding:14px;border-radius:18px;background:#f7f8fb}.bar{height:12px;background:#e5e9f1;border-radius:100px;overflow:hidden;margin:8px 0}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--vino),#c40c48);width:0%}.metric{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:6px}
+main{min-width:0}.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;margin-bottom:22px}.card h2{font-size:30px;margin:0 0 10px;color:#121826}.card h3{font-size:22px;margin:24px 0 10px;color:var(--vino)}.lead{font-size:18px;line-height:1.55;color:#334155}.muted{color:var(--muted)}.pill{display:inline-flex;background:#f5e6ed;color:var(--vino);font-weight:900;border-radius:100px;padding:8px 12px;margin:4px 6px 4px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.mini{border:1px solid #e1e6ef;border-radius:18px;padding:18px;background:#fff}.mini h4{margin:0 0 8px;color:#111827}.note{border-left:6px solid var(--vino);background:#fff3f7;border-radius:14px;padding:16px;margin:16px 0}.warning{border-left-color:var(--amarillo);background:#fff8e9}.ok{border-left-color:var(--verde);background:#edfff5}.blue{border-left-color:var(--azul);background:#eef7ff}.formula{background:#111827;color:#fff;padding:15px;border-radius:16px;font-family:Consolas,monospace;overflow:auto;margin:12px 0}.kbd{font-family:Consolas,monospace;background:#eef1f6;border:1px solid #d9e0ea;border-radius:8px;padding:2px 6px}table{width:100%;border-collapse:collapse;margin:14px 0;background:#fff;border-radius:14px;overflow:hidden}th,td{border:1px solid #e1e6ef;padding:12px;text-align:left}th{background:#f3f5f9;color:#1f2937}.quiz{border:1px solid #e2e8f0;background:#fbfcfe;border-radius:18px;padding:18px;margin:16px 0}.quiz h4{margin:0 0 12px}.option{display:block;background:#fff;border:1px solid #dce3ec;border-radius:14px;padding:12px;margin:8px 0;cursor:pointer}.option:hover{border-color:var(--vino)}.option.correct{border-color:var(--verde);background:#edfdf5}.option.wrong{border-color:#c62828;background:#fff0f0}.feedback{font-weight:800;margin-top:8px}.hidden{display:none!important}.twoCols{columns:2 280px}.lessonFooter{display:flex;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap}.inputRow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0}.inputRow input{padding:12px;border-radius:12px;border:1px solid #d5dce8}canvas{width:100%;max-height:260px;border:1px solid #e1e6ef;border-radius:16px;background:#fff}.tag{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#7a8598;font-weight:900}.report{white-space:pre-wrap;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px}.printOnly{display:none}
+
+.flowWrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:center;margin:18px 0}.stateBox{border:2px solid #d6deea;border-radius:999px;padding:22px;text-align:center;font-size:24px;font-weight:900;background:#fff;color:#111827;box-shadow:0 8px 18px rgba(15,23,42,.06)}.stateBox.main{border-color:var(--vino);color:var(--vino)}.ruleBox{border:1px solid #b9c7dc;background:#fbfdff;border-radius:16px;padding:14px;text-align:center;font-weight:700;min-height:72px;display:flex;align-items:center;justify-content:center}.arrow{font-size:28px;text-align:center;color:var(--vino);font-weight:900}.ruleGrid{display:grid;grid-template-columns:1fr 90px 1fr;gap:14px;align-items:center}.ruleGrid .centerState{grid-column:2;grid-row:2}.ruleGrid .topLeft{grid-column:1;grid-row:1}.ruleGrid .bottomLeft{grid-column:1;grid-row:3}.ruleGrid .topRight{grid-column:3;grid-row:1}.ruleGrid .bottomRight{grid-column:3;grid-row:3}.ruleGrid .midLeft{grid-column:1;grid-row:2}.ruleGrid .midRight{grid-column:3;grid-row:2}@media (max-width:900px){.flowWrap,.ruleGrid{display:block}.stateBox,.ruleBox{margin:10px 0}.arrow{display:none}}
+@media (max-width:900px){.layout{grid-template-columns:1fr;padding:14px}.sidebar{position:relative;top:0}.grid{grid-template-columns:1fr}.inputRow{grid-template-columns:1fr}.topBtns{margin-left:0}.headText h1{font-size:20px}header{align-items:flex-start;flex-wrap:wrap}.logo{width:62px;height:62px;font-size:20px}}
+@media print{header,.sidebar,.lessonFooter,.topBtns{display:none}.layout{display:block;padding:0}.card{box-shadow:none;border:1px solid #ddd}.printOnly{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">C4.0</div>
+  <div class="headText">
+    <h1>Calidad 4.0 UNLa: Lección de Muestreo de Aceptación</h1>
+    <h2>Laboratorio Universitario de Matemática y Cálculos Aplicados — LUMCA</h2>
+    <p>Departamento de Desarrollo Productivo y Tecnológico — Universidad Nacional de Lanús</p>
+    <b>Prof. Ing. Juan M. Alderete, PhD</b>
+  </div>
+  <div class="topBtns">
+    <button class="btn soft" onclick="saveSession()">Guardar sesión</button>
+    <button class="btn" onclick="loadSession()">Recuperar</button>
+    <button class="btn red" onclick="clearSession()">Limpiar</button>
+  </div>
+</header>
+<div class="layout">
+  <aside class="sidebar">
+    <div id="nav"></div>
+    <div class="progressBox">
+      <b>Avance de la lección</b>
+      <div class="bar"><span id="progressBar"></span></div>
+      <div class="metric"><span id="progressTxt">0%</span><span id="scoreTxt">0/0</span></div>
+    </div>
+  </aside>
+  <main>
+    <section class="card lesson" id="s0">
+      <span class="tag">Inicio</span>
+      <h2>¿Para qué sirve el muestreo de aceptación?</h2>
+      <p class="lead">Esta lección introduce el muestreo de aceptación como herramienta de <b>post-control</b>: permite tomar una decisión sobre un lote terminado o recibido, sin confundirlo con el control estadístico del proceso.</p>
+      <div class="note blue"><b>Idea rectora:</b> el muestreo de aceptación no busca “estimar la calidad real” del lote ni reemplazar el control del proceso. Su función es <b>juzgar lotes</b>: aceptar o rechazar bajo reglas previamente documentadas.</div>
+      <div class="grid">
+        <div class="mini"><h4>Lo que aprenderás</h4><p>Cuándo conviene usarlo, qué riesgos introduce, cómo se define un lote y qué diferencia hay entre planes, esquemas y sistemas de muestreo.</p></div>
+        <div class="mini"><h4>Lo que queda para el simulador</h4><p>La ejercitación operativa con tablas, NCA, códigos de tamaño de muestra, métodos por atributos y variables, y decisiones completas de aceptación.</p></div>
+      </div>
+      <div class="quiz" data-q="q0" data-answer="b">
+        <h4>Chequeo inicial: ¿qué decide el muestreo de aceptación?</h4>
+        <label class="option"><input type="radio" name="q0" value="a"> Si el proceso está bajo control estadístico.</label>
+        <label class="option"><input type="radio" name="q0" value="b"> Si un lote se acepta o se rechaza según una muestra.</label>
+        <label class="option"><input type="radio" name="q0" value="c"> La causa raíz de los defectos.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn primary" onclick="go(1)">Comenzar la lección</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s1">
+      <span class="tag">Módulo 1</span>
+      <h2>Control de proceso y muestreo de aceptación no son lo mismo</h2>
+      <p>El muestreo de aceptación se aplica al final de un proceso o al recibir un lote. Por eso conviene ubicarlo como una herramienta de verificación, no como una herramienta principal de control del proceso.</p>
+      <div class="note warning"><b>No sustituye a las gráficas de control.</b> Si el proceso no fue trabajado, mejorado y controlado, el muestreo puede volverse excesivo, caro y poco informativo.</div>
+      <table>
+        <thead><tr><th>Control estadístico de proceso</th><th>Muestreo de aceptación</th></tr></thead>
+        <tbody>
+          <tr><td>Busca detectar cambios del proceso mientras se produce.</td><td>Busca decidir sobre un lote ya producido o recibido.</td></tr>
+          <tr><td>Genera información para intervenir el proceso.</td><td>Genera una decisión: aceptar o rechazar.</td></tr>
+          <tr><td>Trabaja con subgrupos racionales y límites de control.</td><td>Trabaja con lotes, muestras y criterios de aceptación.</td></tr>
+        </tbody>
+      </table>
+      <div class="quiz" data-q="q1" data-answer="c">
+        <h4>¿Cuál afirmación es correcta?</h4>
+        <label class="option"><input type="radio" name="q1" value="a"> El muestreo de aceptación reemplaza al control del proceso.</label>
+        <label class="option"><input type="radio" name="q1" value="b"> El muestreo de aceptación permite comparar directamente calidades entre lotes.</label>
+        <label class="option"><input type="radio" name="q1" value="c"> El muestreo de aceptación es una herramienta de verificación y decisión sobre lotes.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(0)">Anterior</button><button class="btn primary" onclick="go(2)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s2">
+      <span class="tag">Módulo 2</span>
+      <h2>Tres maneras de juzgar un lote</h2>
+      <p>Ante un lote de insumos, envases o producto terminado, la organización debe elegir un enfoque de decisión.</p>
+      <div class="grid">
+        <div class="mini"><h4>1. Aceptación sin inspección</h4><p>Puede aplicarse con proveedores de altísima confianza, historial robusto y acuerdos documentados. Reduce costos, pero aumenta dependencia del sistema del proveedor.</p></div>
+        <div class="mini"><h4>2. Inspección al 100%</h4><p>Se revisan todas las unidades. Es útil en casos críticos, pero puede ser lenta, costosa, destructiva o generar errores de inspección por fatiga.</p></div>
+        <div class="mini"><h4>3. Muestreo de aceptación</h4><p>Se toma una muestra y se decide sobre el lote completo. Administra riesgos y costos mediante un plan documentado.</p></div>
+        <div class="mini"><h4>La clave</h4><p>La elección no es sólo técnica: combina riesgo, costo, responsabilidad legal, criticidad del defecto e historial del proveedor.</p></div>
+      </div>
+      <div class="quiz" data-q="q2" data-answer="a">
+        <h4>¿Cuándo resulta especialmente razonable usar muestreo de aceptación?</h4>
+        <label class="option"><input type="radio" name="q2" value="a"> Cuando las pruebas son destructivas o la inspección 100% es costosa.</label>
+        <label class="option"><input type="radio" name="q2" value="b"> Cuando no se definieron criterios de aceptación.</label>
+        <label class="option"><input type="radio" name="q2" value="c"> Cuando se quiere eliminar totalmente el riesgo.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(1)">Anterior</button><button class="btn primary" onclick="go(3)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s3">
+      <span class="tag">Módulo 3</span>
+      <h2>Ventajas, desventajas y riesgos</h2>
+      <p>El muestreo de aceptación reduce costos y manipulación, pero introduce incertidumbre. Por eso debe diseñarse y documentarse con precisión.</p>
+      <div class="grid">
+        <div class="mini"><h4>Ventajas</h4><ul><li>Menor costo que la inspección al 100%.</li><li>Menor manipulación y daño de productos.</li><li>Aplicable a pruebas destructivas.</li><li>Menor carga operativa de inspección.</li><li>El rechazo de lotes incentiva la mejora del proveedor.</li></ul></div>
+        <div class="mini"><h4>Desventajas</h4><ul><li>Existe riesgo de aceptar lotes malos.</li><li>Existe riesgo de rechazar lotes buenos.</li><li>Genera poca información sobre proceso y producto.</li><li>Exige planeación, documentación y criterios claros.</li></ul></div>
+      </div>
+      <div class="note ok"><b>Mensaje central:</b> el muestreo no elimina el riesgo. Lo hace explícito, medible y negociable.</div>
+      <div class="quiz" data-q="q3" data-answer="b">
+        <h4>¿Cuál es una desventaja propia del muestreo de aceptación?</h4>
+        <label class="option"><input type="radio" name="q3" value="a"> Obliga a inspeccionar siempre el 100%.</label>
+        <label class="option"><input type="radio" name="q3" value="b"> Puede aceptar lotes malos o rechazar lotes buenos.</label>
+        <label class="option"><input type="radio" name="q3" value="c"> Impide documentar procedimientos.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(2)">Anterior</button><button class="btn primary" onclick="go(4)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s4">
+      <span class="tag">Módulo 4</span>
+      <h2>Cómo debe conformarse un lote</h2>
+      <p>Un plan de muestreo pierde valor si el lote está mal definido. La muestra sólo representa razonablemente al lote si el lote fue conformado con criterios de homogeneidad y trazabilidad.</p>
+      <div class="note"><b>Criterios básicos:</b> los lotes deberían ser homogéneos en operario, materia prima, máquina, turno o intervalo de tiempo; además, deben poder manipularse y muestrearse con facilidad.</div>
+      <table>
+        <thead><tr><th>Criterio</th><th>Pregunta guía</th></tr></thead>
+        <tbody>
+          <tr><td>Homogeneidad</td><td>¿El lote fue producido bajo condiciones razonablemente similares?</td></tr>
+          <tr><td>Trazabilidad</td><td>¿Podemos reconstruir origen, turno, equipo, materia prima y fecha?</td></tr>
+          <tr><td>Manejabilidad</td><td>¿El empaque facilita seleccionar unidades de muestra?</td></tr>
+          <tr><td>Tamaño</td><td>¿El tamaño del lote es compatible con la logística y con las tablas del sistema de muestreo?</td></tr>
+        </tbody>
+      </table>
+      <div class="quiz" data-q="q4" data-answer="c">
+        <h4>¿Qué condición mejora la validez práctica del muestreo?</h4>
+        <label class="option"><input type="radio" name="q4" value="a"> Mezclar unidades de distintos proveedores sin identificarlas.</label>
+        <label class="option"><input type="radio" name="q4" value="b"> Armar lotes pequeños sin trazabilidad.</label>
+        <label class="option"><input type="radio" name="q4" value="c"> Definir lotes homogéneos y fácilmente muestreables.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(3)">Anterior</button><button class="btn primary" onclick="go(5)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s5">
+      <span class="tag">Módulo 5</span>
+      <h2>Plan, esquema y sistema de muestreo</h2>
+      <p>Conviene separar tres niveles de decisión, porque muchas confusiones aparecen cuando se llama “plan” a todo.</p>
+      <table>
+        <thead><tr><th>Nivel</th><th>Significado</th><th>Ejemplo</th></tr></thead>
+        <tbody>
+          <tr><td><b>Plan de muestreo</b></td><td>Tamaño muestral + criterio de aceptación.</td><td>Tomar n unidades y aceptar si el número de defectuosas no supera c.</td></tr>
+          <tr><td><b>Esquema de muestreo</b></td><td>Conjunto de planes para distintas situaciones, incluyendo cambios de severidad.</td><td>Inspección normal, estricta y reducida.</td></tr>
+          <tr><td><b>Sistema de muestreo</b></td><td>Colección ordenada de métodos, reglas y tablas.</td><td>Un sistema normalizado de muestreo por atributos o variables.</td></tr>
+        </tbody>
+      </table>
+      <div class="quiz" data-q="q5" data-answer="a">
+        <h4>¿Qué define mínimamente un plan de muestreo simple por atributos?</h4>
+        <label class="option"><input type="radio" name="q5" value="a"> Tamaño de muestra y número de aceptación.</label>
+        <label class="option"><input type="radio" name="q5" value="b"> Sólo el nombre del proveedor.</label>
+        <label class="option"><input type="radio" name="q5" value="c"> Sólo el costo de inspección.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(4)">Anterior</button><button class="btn primary" onclick="go(6)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s6">
+      <span class="tag">Módulo 6</span>
+      <h2>Tipos de planes: atributos y variables</h2>
+      <div class="grid">
+        <div class="mini"><h4>Por atributos</h4><p>La unidad se clasifica como conforme/no conforme, pasa/no pasa, defectuosa/no defectuosa. La variable de conteo es discreta.</p><div class="formula">X = número de defectuosas en la muestra</div></div>
+        <div class="mini"><h4>Por variables</h4><p>Se mide una característica numérica, por ejemplo peso, concentración, resistencia, dimensión o porcentaje de una sustancia. Suelen presuponer normalidad.</p><div class="formula">Z = distancia estandarizada al límite de especificación</div></div>
+      </div>
+      <h3>También pueden ser simples, dobles o múltiples</h3>
+      <p>En un plan simple, una sola muestra alcanza para aceptar o rechazar. En planes dobles o múltiples pueden existir decisiones intermedias que obligan a tomar nuevas muestras.</p>
+      <div class="quiz" data-q="q6" data-answer="b">
+        <h4>Si se inspeccionan tapas y se decide “pasa/no pasa”, ¿qué tipo de plan corresponde?</h4>
+        <label class="option"><input type="radio" name="q6" value="a"> Por variables.</label>
+        <label class="option"><input type="radio" name="q6" value="b"> Por atributos.</label>
+        <label class="option"><input type="radio" name="q6" value="c"> Por regresión.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(5)">Anterior</button><button class="btn primary" onclick="go(7)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s7">
+      <span class="tag">Módulo 7</span>
+      <h2>La CCO como puente entre teoría y decisión</h2>
+      <p>La Curva Característica de Operación representa la <b>probabilidad de aceptar un lote</b> en función de la <b>fracción defectuosa real</b> del lote.</p>
+      <div class="formula">P<sub>a</sub> = P(aceptar el lote) = P(X ≤ c)</div>
+      <p>En planes por atributos, si el lote puede idealizarse como grande o infinito, la curva puede construirse con un modelo binomial con parámetros <span class="kbd">n</span> y <span class="kbd">p</span>. El punto no es hacer una ejercitación completa acá, sino entender que la CCO sirve para visualizar cómo se comporta un plan antes de adoptarlo.</p>
+      <canvas id="miniChart" width="900" height="260"></canvas>
+      <div class="inputRow">
+        <label>n<input id="nDemo" type="number" value="50" min="1" max="500"></label>
+        <label>c<input id="cDemo" type="number" value="2" min="0" max="50"></label>
+        <label>NCA %<input id="aqlDemo" type="number" value="1" min="0" max="100" step="0.1"></label>
+        <label>PDTL %<input id="ltpdDemo" type="number" value="6" min="0" max="100" step="0.1"></label>
+      </div>
+      <button class="btn soft" onclick="drawMiniChart()">Actualizar ejemplo conceptual</button>
+      <div class="note blue"><b>Aclaración:</b> este gráfico es didáctico. La ejercitación completa de lectura de tablas y selección de planes queda para el simulador de muestreo.</div>
+      <div class="quiz" data-q="q7" data-answer="c">
+        <h4>¿Qué muestra una CCO?</h4>
+        <label class="option"><input type="radio" name="q7" value="a"> La cantidad exacta de defectos que tendrá el próximo lote.</label>
+        <label class="option"><input type="radio" name="q7" value="b"> El costo de producción de cada lote.</label>
+        <label class="option"><input type="radio" name="q7" value="c"> La probabilidad de aceptar lotes para distintos niveles de fracción defectuosa.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(6)">Anterior</button><button class="btn primary" onclick="go(8)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s8">
+      <span class="tag">Módulo 8</span>
+      <h2>NCA, PDTL y niveles de inspección</h2>
+      <div class="grid">
+        <div class="mini"><h4>NCA</h4><p>El Nivel de Calidad Aceptable representa el peor nivel de calidad del proceso del productor que el consumidor consideraría aceptable como media del proceso.</p></div>
+        <div class="mini"><h4>PDTL</h4><p>El Porcentaje Defectuoso Tolerable por Lote representa el peor nivel de calidad que el consumidor está dispuesto a aceptar en un lote individual.</p></div>
+      </div>
+      <p>En sistemas normalizados, el NCA tiene un papel central. Luego se selecciona nivel de inspección, tamaño de lote, código de tamaño de muestra y tipo de plan.</p>
+      <div class="note"><b>Niveles de inspección:</b> los niveles generales I, II y III ajustan el tamaño de muestra y la severidad operativa. Los niveles especiales se usan cuando se requieren muestras pequeñas, asumiendo mayores riesgos de muestreo.</div>
+      <div class="quiz" data-q="q8" data-answer="a">
+        <h4>¿Qué papel cumple el NCA?</h4>
+        <label class="option"><input type="radio" name="q8" value="a"> Es el punto principal para seleccionar planes en sistemas normalizados por atributos.</label>
+        <label class="option"><input type="radio" name="q8" value="b"> Es el número exacto de defectos encontrados en la muestra.</label>
+        <label class="option"><input type="radio" name="q8" value="c"> Es siempre igual al tamaño del lote.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(7)">Anterior</button><button class="btn primary" onclick="go(9)">Siguiente</button></div>
+    </section>
+
+
+    <section class="card lesson hidden" id="s9">
+      <span class="tag">Módulo 9</span>
+      <h2>Cambio de nivel de inspección: normal, reducida y estricta</h2>
+      <p class="lead">En los sistemas normalizados de muestreo no se trabaja siempre con la misma severidad. El plan puede moverse entre inspección <b>normal</b>, <b>reducida</b> y <b>estricta</b>, según el comportamiento histórico de los lotes.</p>
+      <div class="note blue"><b>Idea central:</b> el nivel de inspección no se cambia por intuición ni por conveniencia del momento. Se cambia siguiendo reglas documentadas, de modo que el sistema sea defendible frente al proveedor, al cliente y a una auditoría.</div>
+
+      <div class="flowWrap">
+        <div class="stateBox">Reducida</div>
+        <div class="stateBox main">Normal</div>
+        <div class="stateBox">Estricta</div>
+      </div>
+
+      <h3>¿Cómo se interpreta cada estado?</h3>
+      <div class="grid">
+        <div class="mini"><h4>Inspección normal</h4><p>Es el punto de partida. Se usa cuando no hay evidencia suficiente para relajar ni para endurecer la inspección.</p></div>
+        <div class="mini"><h4>Inspección reducida</h4><p>Se usa cuando el producto se mantiene estable, con aceptación sostenida de lotes y aprobación de una autoridad responsable.</p></div>
+        <div class="mini"><h4>Inspección estricta</h4><p>Se usa cuando aparecen rechazos consecutivos o señales de deterioro en la calidad. Aumenta la protección del consumidor.</p></div>
+        <div class="mini"><h4>Interrupción</h4><p>Si se permanece en estricta durante demasiados lotes sin recuperación, puede corresponder interrumpir la inspección o revisar el acuerdo de suministro.</p></div>
+      </div>
+
+      <h3>Reglas de movimiento entre niveles</h3>
+      <table>
+        <thead><tr><th>Situación observada</th><th>Movimiento recomendado</th><th>Sentido técnico</th></tr></thead>
+        <tbody>
+          <tr><td>Inicio del esquema de inspección</td><td>Comenzar en inspección normal</td><td>Es el estado base del sistema.</td></tr>
+          <tr><td>Producto estable, 10 lotes consecutivos aceptados y aprobación de autoridad responsable</td><td>Normal → Reducida</td><td>Se justifica reducir carga de inspección porque el historial es favorable.</td></tr>
+          <tr><td>Lote rechazado, producción irregular, incumplimiento de criterios u otras condiciones justificadas</td><td>Reducida → Normal</td><td>Se vuelve al estado base porque ya no hay evidencia suficiente para relajar la inspección.</td></tr>
+          <tr><td>Se rechazan entre 2 y 5 lotes consecutivos</td><td>Normal → Estricta</td><td>Se endurece la inspección para proteger al consumidor.</td></tr>
+          <tr><td>Se aceptan 5 lotes consecutivos bajo inspección estricta</td><td>Estricta → Normal</td><td>La evidencia reciente permite volver al estado base.</td></tr>
+          <tr><td>Se acumulan 10 lotes consecutivos y se sigue en inspección estricta</td><td>Estricta → Interrupción del proceso de inspección</td><td>El sistema indica un problema persistente que no debería resolverse sólo muestreando.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note warning"><b>Lectura didáctica:</b> la inspección reducida no significa “dejar de controlar”; significa controlar menos porque hay evidencia documentada de estabilidad. La inspección estricta no corrige el proceso; sólo aumenta la severidad de la decisión sobre lotes.</div>
+
+      <div class="quiz" data-q="q10" data-answer="b">
+        <h4>Si desde inspección normal se rechazan varios lotes consecutivos, ¿qué corresponde conceptualmente?</h4>
+        <label class="option"><input type="radio" name="q10" value="a"> Pasar a inspección reducida, porque ya se inspeccionó demasiado.</label>
+        <label class="option"><input type="radio" name="q10" value="b"> Pasar a inspección estricta, porque aumentó la evidencia de problemas.</label>
+        <label class="option"><input type="radio" name="q10" value="c"> Aceptar sin inspección los siguientes lotes.</label>
+        <div class="feedback"></div>
+      </div>
+
+      <div class="quiz" data-q="q11" data-answer="a">
+        <h4>¿Cuándo tendría sentido pasar de inspección normal a reducida?</h4>
+        <label class="option"><input type="radio" name="q11" value="a"> Cuando hay estabilidad, lotes consecutivos aceptados y aprobación responsable.</label>
+        <label class="option"><input type="radio" name="q11" value="b"> Cuando se rechazan 2 a 5 lotes consecutivos.</label>
+        <label class="option"><input type="radio" name="q11" value="c"> Cuando no se definió el NCA.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(8)">Anterior</button><button class="btn primary" onclick="go(10)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s10">
+      <span class="tag">Módulo 10</span>
+      <h2>Secuencia conceptual para usar tablas</h2>
+      <p>Esta lección no reemplaza al simulador, pero deja preparado el razonamiento necesario para usarlo.</p>
+      <ol class="lead">
+        <li>Definir el lote y confirmar que sea razonablemente homogéneo.</li>
+        <li>Definir la unidad de análisis y el defecto o característica crítica.</li>
+        <li>Elegir si corresponde muestreo por atributos o por variables.</li>
+        <li>Seleccionar NCA y nivel de inspección.</li>
+        <li>Determinar tamaño de lote y código de tamaño de muestra.</li>
+        <li>Elegir el tipo de plan: simple, doble o múltiple.</li>
+        <li>Leer en la tabla el tamaño de muestra y el criterio de aceptación.</li>
+        <li>Aplicar el plan y decidir: aceptar, rechazar o continuar según corresponda.</li>
+      </ol>
+      <div class="note ok"><b>Regla didáctica:</b> primero se comprende el sentido del plan; después se operan las tablas; finalmente se justifica la decisión.</div>
+      <div class="quiz" data-q="q9" data-answer="b">
+        <h4>¿Cuál es el orden más razonable?</h4>
+        <label class="option"><input type="radio" name="q9" value="a"> Leer cualquier tabla y luego definir qué lote se está evaluando.</label>
+        <label class="option"><input type="radio" name="q9" value="b"> Definir lote, defecto, tipo de plan, NCA y nivel de inspección antes de leer tablas.</label>
+        <label class="option"><input type="radio" name="q9" value="c"> Decidir aceptación sin conocer tamaño muestral.</label>
+        <div class="feedback"></div>
+      </div>
+      <div class="lessonFooter"><button class="btn" onclick="go(9)">Anterior</button><button class="btn primary" onclick="go(11)">Siguiente</button></div>
+    </section>
+
+    <section class="card lesson hidden" id="s11">
+      <span class="tag">Cierre</span>
+      <h2>Síntesis e informe de desempeño</h2>
+      <p>La lección busca dejar instalados los conceptos previos para que el simulador se utilice con sentido técnico y no como una mera búsqueda mecánica en tablas.</p>
+      <div class="grid">
+        <div class="mini"><h4>Conceptos que deberían quedar claros</h4><ul><li>El muestreo de aceptación juzga lotes.</li><li>No sustituye el control del proceso.</li><li>Implica riesgos para productor y consumidor.</li><li>Requiere lotes bien conformados.</li><li>Los planes pueden ser por atributos o variables.</li><li>La CCO expresa probabilidades de aceptación.</li><li>Los niveles normal, reducido y estricto cambian según reglas documentadas.</li></ul></div>
+        <div class="mini"><h4>Próximo paso</h4><p>Aplicar estos conceptos en el simulador de muestreo de aceptación para resolver casos por atributos, variables método k y variables método m.</p></div>
+      </div>
+      <button class="btn green" onclick="generateReport()">Generar informe con calificación sugerida</button>
+      <button class="btn" onclick="window.print()">Imprimir / guardar PDF</button>
+      <div id="report" class="report" style="margin-top:18px">Todavía no se generó el informe.</div>
+      <div class="lessonFooter"><button class="btn" onclick="go(10)">Anterior</button><button class="btn primary" onclick="go(0)">Volver al inicio</button></div>
+    </section>
+  </main>
+</div>
+<script>
+const sections=[
+  'Inicio','Control vs. muestreo','Enfoques para juzgar lotes','Ventajas y riesgos','Conformación del lote','Plan, esquema y sistema','Atributos y variables','CCO conceptual','NCA y PDTL','Cambio de inspección','Uso de tablas','Informe'
+];
+const state={section:0,answers:{},visited:{0:true}};
+function init(){renderNav();attachQuiz();updateProgress();drawMiniChart();loadSession(false)}
+function renderNav(){const nav=document.getElementById('nav');nav.innerHTML='';sections.forEach((s,i)=>{const d=document.createElement('div');d.className='navitem '+(i===state.section?'active':'');d.onclick=()=>go(i);d.innerHTML=`<span>${i===0?'⌂':'▸'}</span><span>${s}</span><small>${state.visited[i]?'✓':''}</small>`;nav.appendChild(d);});}
+function go(i){state.section=i;state.visited[i]=true;document.querySelectorAll('.lesson').forEach((el,idx)=>el.classList.toggle('hidden',idx!==i));renderNav();updateProgress();saveSession(false);window.scrollTo({top:0,behavior:'smooth'});}
+function attachQuiz(){document.querySelectorAll('.quiz').forEach(q=>{q.querySelectorAll('input').forEach(inp=>{inp.addEventListener('change',()=>answerQuiz(q,inp.value));});});}
+function answerQuiz(q,val){const id=q.dataset.q, ans=q.dataset.answer;state.answers[id]=val; q.querySelectorAll('.option').forEach(o=>{o.classList.remove('correct','wrong'); const input=o.querySelector('input'); if(input.value===ans)o.classList.add('correct'); if(input.checked && input.value!==ans)o.classList.add('wrong');}); const fb=q.querySelector('.feedback'); if(val===ans){fb.textContent='Correcto.';fb.style.color='var(--verde)'}else{fb.textContent='Revisá el concepto y volvé a intentarlo.';fb.style.color='var(--rojo)'} updateProgress(); saveSession(false);}
+function updateProgress(){const totalQ=document.querySelectorAll('.quiz').length;let ok=0;document.querySelectorAll('.quiz').forEach(q=>{if(state.answers[q.dataset.q]===q.dataset.answer)ok++;}); const visited=Object.keys(state.visited).length; const progress=Math.round((visited/sections.length)*100); document.getElementById('progressBar').style.width=progress+'%'; document.getElementById('progressTxt').textContent=progress+'% recorrido'; document.getElementById('scoreTxt').textContent=ok+'/'+totalQ+' correctas';}
+function saveSession(show=true){localStorage.setItem('leccion_muestreo_aceptacion_unla',JSON.stringify(state)); if(show)alert('Sesión guardada en este navegador.');}
+function loadSession(show=true){const raw=localStorage.getItem('leccion_muestreo_aceptacion_unla'); if(!raw){if(show)alert('No hay sesión guardada.');return} const data=JSON.parse(raw); Object.assign(state,data); document.querySelectorAll('.quiz').forEach(q=>{const id=q.dataset.q; const val=state.answers[id]; if(val){const input=q.querySelector(`input[value="${val}"]`); if(input){input.checked=true; answerQuiz(q,val);}}}); go(state.section||0); if(show)alert('Sesión recuperada.');}
+function clearSession(){if(confirm('¿Limpiar avance y respuestas?')){localStorage.removeItem('leccion_muestreo_aceptacion_unla'); location.reload();}}
+function comb(n,k){if(k<0||k>n)return 0;k=Math.min(k,n-k);let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r}
+function binomCDF(n,c,p){let s=0;for(let x=0;x<=c;x++)s+=comb(n,x)*Math.pow(p,x)*Math.pow(1-p,n-x);return Math.min(1,Math.max(0,s));}
+function drawMiniChart(){const canvas=document.getElementById('miniChart'); if(!canvas)return; const ctx=canvas.getContext('2d'); const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H); const n=Math.max(1,parseInt(document.getElementById('nDemo').value||50)); const c=Math.max(0,parseInt(document.getElementById('cDemo').value||2)); const aql=parseFloat(document.getElementById('aqlDemo').value||1)/100; const ltpd=parseFloat(document.getElementById('ltpdDemo').value||6)/100; const left=60,right=25,top=25,bottom=45; const maxp=0.20; ctx.strokeStyle='#d6deea';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,top);ctx.lineTo(left,H-bottom);ctx.lineTo(W-right,H-bottom);ctx.stroke(); ctx.fillStyle='#475569';ctx.font='14px Arial';ctx.fillText('Pa',18,top+5);ctx.fillText('% defectuosos',W-130,H-12); for(let i=0;i<=4;i++){let y=H-bottom-(H-bottom-top)*i/4;ctx.strokeStyle='#eef2f7';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(W-right,y);ctx.stroke();ctx.fillStyle='#64748b';ctx.fillText((i/4).toFixed(2),18,y+4);} ctx.strokeStyle='#97002e';ctx.lineWidth=4;ctx.beginPath(); for(let i=0;i<=100;i++){let p=maxp*i/100;let pa=binomCDF(n,c,p);let x=left+(W-right-left)*p/maxp;let y=H-bottom-(H-bottom-top)*pa; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke(); function marker(p,label,color){if(p<0||p>maxp)return;let pa=binomCDF(n,c,p);let x=left+(W-right-left)*p/maxp;let y=H-bottom-(H-bottom-top)*pa;ctx.strokeStyle=color;ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(x,H-bottom);ctx.lineTo(x,y);ctx.lineTo(left,y);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);ctx.fill();ctx.font='bold 13px Arial';ctx.fillText(label+' Pa='+pa.toFixed(3),x+8,y-8);} marker(aql,'NCA','#0f8a4b'); marker(ltpd,'PDTL','#c62828'); for(let i=0;i<=4;i++){let p=maxp*i/4;let x=left+(W-right-left)*p/maxp;ctx.fillStyle='#64748b';ctx.fillText((p*100).toFixed(0)+'%',x-10,H-bottom+22);}}
+function generateReport(){const totalQ=document.querySelectorAll('.quiz').length;let ok=0;document.querySelectorAll('.quiz').forEach(q=>{if(state.answers[q.dataset.q]===q.dataset.answer)ok++;}); const pct=Math.round(100*ok/totalQ); let level='A reforzar'; if(pct>=85)level='Muy satisfactorio'; else if(pct>=70)level='Satisfactorio'; else if(pct>=55)level='Básico'; const date=new Date().toLocaleString('es-AR'); const report=`INFORME DE DESEMPEÑO\n\nLección: Muestreo de Aceptación\nInstitución: Universidad Nacional de Lanús — LUMCA\nReferencia docente: Prof. Ing. Juan M. Alderete, PhD\nFecha: ${date}\n\nResultado conceptual\n- Respuestas correctas: ${ok}/${totalQ}\n- Porcentaje: ${pct}%\n- Calificación sugerida: ${level}\n\nInterpretación sugerida\n${pct>=85?'El desempeño muestra comprensión sólida de la finalidad del muestreo de aceptación, sus riesgos, tipos de planes, uso conceptual de la CCO y reglas de cambio de inspección.':pct>=70?'El desempeño es adecuado. Conviene reforzar la diferencia entre control del proceso y muestreo de aceptación, y la relación entre plan, esquema y sistema.':pct>=55?'El desempeño permite avanzar, pero requiere revisión antes de usar el simulador de tablas.': 'Se recomienda rehacer la lección antes de pasar al simulador de muestreo.'}\n\nPróximo paso\nAplicar los conceptos en el simulador de muestreo de aceptación, resolviendo casos por atributos y por variables.`;document.getElementById('report').textContent=report;}
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
