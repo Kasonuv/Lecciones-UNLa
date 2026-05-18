@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lección | Análisis de Patrones en Gráficos de Control</title>
+  <style>
+    :root{
+      --unla-green:#006b54;
+      --unla-green-2:#00866b;
+      --unla-teal:#00a383;
+      --unla-gold:#f2b705;
+      --ink:#17312b;
+      --muted:#5d6f69;
+      --bg:#f4f8f6;
+      --card:#ffffff;
+      --line:#d9e8e3;
+      --danger:#b42318;
+      --warning:#b7791f;
+      --ok:#147a50;
+      --shadow:0 18px 45px rgba(0, 70, 54, .12);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, Helvetica, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(0,163,131,.16), transparent 34rem),
+        linear-gradient(180deg,#f8fbfa 0%, var(--bg) 100%);
+      line-height:1.55;
+    }
+    header{
+      background:linear-gradient(135deg,var(--unla-green) 0%, #00493e 70%);
+      color:white;
+      padding:42px 26px 34px;
+      position:relative;
+      overflow:hidden;
+    }
+    header:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-90px;
+      width:290px; height:290px;
+      border:32px solid rgba(242,183,5,.23);
+      border-radius:50%;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+    .eyebrow{font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f9dc70;font-size:.82rem;margin-bottom:10px}
+    h1{font-size:clamp(2rem,4.5vw,4.2rem);line-height:1.04;margin:0 0 12px;font-weight:800;max-width:980px}
+    .subtitle{font-size:1.12rem;max-width:920px;color:#e7f5f0;margin:0}
+    .credit{margin-top:24px;font-weight:700;color:#ffffffcc}
+    nav{
+      position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line)
+    }
+    nav .wrap{display:flex;gap:10px;overflow:auto;padding-top:10px;padding-bottom:10px}
+    nav a{white-space:nowrap;text-decoration:none;color:var(--unla-green);font-weight:700;border:1px solid var(--line);padding:8px 12px;border-radius:999px;background:white}
+    nav a:hover{background:#effaf6;border-color:var(--unla-teal)}
+    main{padding:30px 0 70px}
+    section{margin:26px 0}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin-bottom:22px}
+    h2{font-size:clamp(1.5rem,2.8vw,2.25rem);margin:0 0 12px;color:var(--unla-green)}
+    h3{font-size:1.28rem;margin:18px 0 8px;color:#064d40}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+    .col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    @media(max-width:900px){.col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}}
+    .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:7px 11px;background:#e9f6f2;color:#075343;font-weight:700;font-size:.92rem;margin:4px 6px 4px 0}
+    .pill.warn{background:#fff4d5;color:#6f4b00}.pill.danger{background:#fee4e2;color:#7a271a}.pill.ok{background:#dcfae6;color:#085d3a}
+    .note{border-left:5px solid var(--unla-gold);background:#fff9e6;padding:16px 18px;border-radius:14px;margin:16px 0;color:#4a3a09}
+    .definition{border-left:5px solid var(--unla-teal);background:#eefbf7;padding:16px 18px;border-radius:14px;margin:16px 0}
+    .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+    .step{background:white;border:1px solid var(--line);border-radius:15px;padding:12px 14px;font-weight:700;box-shadow:0 7px 18px rgba(0,0,0,.04)}
+    .arrow{font-weight:900;color:var(--unla-green)}
+    .chart-shell{background:linear-gradient(180deg,#ffffff,#f9fffd);border:1px solid var(--line);border-radius:20px;padding:16px;position:relative}
+    canvas{width:100%;height:360px;display:block}
+    .buttons{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
+    button{border:0;border-radius:999px;padding:10px 13px;font-weight:800;cursor:pointer;background:#e7f4f0;color:var(--unla-green);box-shadow:0 3px 0 rgba(0,107,84,.15)}
+    button.active, button:hover{background:var(--unla-green);color:white}
+    .small{font-size:.91rem;color:var(--muted)}
+    .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:.9rem;color:var(--muted)}
+    .legend span{display:inline-flex;align-items:center;gap:6px}.sw{width:16px;height:8px;border-radius:9px;display:inline-block;background:#ddd}.sw.a{background:#ffd6d2}.sw.b{background:#fff1c7}.sw.c{background:#dff7ed}
+    .pattern-title{margin-top:0;color:#073f36}
+    .rubric{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+    .rubric div{background:#f7fbfa;border:1px solid var(--line);border-radius:15px;padding:14px}
+    @media(max-width:800px){.rubric{grid-template-columns:1fr}}
+    .quiz-item{padding:15px;border:1px solid var(--line);border-radius:16px;margin:12px 0;background:#fbfefd}
+    .quiz-item label{display:block;margin:8px 0;cursor:pointer}
+    input[type="text"], input[type="email"]{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;font-size:1rem;background:white}
+    .result{border-radius:18px;padding:18px;background:#eefbf7;border:1px solid #b8e8dc;margin-top:15px;display:none}
+    footer{padding:28px;color:#e7f5f0;background:#003d34;text-align:center}
+    .mono{font-family:Consolas, Monaco, monospace}
+    table{width:100%;border-collapse:collapse;background:white;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+    th,td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left} th{background:#e9f6f2;color:#064d40}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">Control Estadístico de Procesos · Lección HTML</div>
+      <h1>Análisis de patrones en gráficos de control X̄</h1>
+      <p class="subtitle">Una guía visual para reconocer señales de causas atribuibles, interpretar zonas del gráfico y vincular el diagnóstico estadístico con herramientas de mejora: Ishikawa, 5 Porqués, Pareto, estratificación y hojas de inspección.</p>
+      <div class="credit">Prof. Ing. Juan M. Alderete · UNLa · LUMCA</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="wrap">
+      <a href="#sentido">Sentido</a>
+      <a href="#zonas">Zonas</a>
+      <a href="#patrones">Patrones</a>
+      <a href="#acciones">Qué hacer después</a>
+      <a href="#actividad">Actividad</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="sentido" class="card">
+      <h2>1. ¿Para qué sirve el análisis de patrones?</h2>
+      <p>Un gráfico de control no se mira solamente para verificar si algún punto superó el límite superior o inferior. También se analiza la <strong>secuencia</strong> de puntos. Esa secuencia puede mostrar corridas, tendencias, alternancias o concentraciones anormales que sugieren que el proceso dejó de comportarse como un sistema estable de causas fortuitas.</p>
+      <div class="definition">
+        <strong>Idea central:</strong> el análisis de patrones transforma una serie temporal de datos en una señal de investigación. No identifica por sí solo la causa raíz, pero indica que conviene investigar el proceso antes de ajustar sin evidencia.
+      </div>
+      <div class="grid">
+        <div class="col-6">
+          <h3>Variación fortuita</h3>
+          <p>Es el “ruido de fondo” propio del proceso. Cuando sólo actúan causas fortuitas, el proceso se considera bajo control estadístico. Los puntos fluctúan alrededor de la línea central sin secuencias sospechosas.</p>
+          <span class="pill ok">Proceso estable</span><span class="pill ok">Variabilidad común</span>
+        </div>
+        <div class="col-6">
+          <h3>Causa atribuible</h3>
+          <p>Es una fuente específica de variación: cambio de materia prima, ajuste incorrecto, operador sin entrenamiento, instrumento descalibrado, mantenimiento inadecuado, cambio de turno, temperatura ambiente, entre otras.</p>
+          <span class="pill danger">Señal de investigación</span><span class="pill danger">Variabilidad especial</span>
+        </div>
+      </div>
+      <div class="note"><strong>Advertencia didáctica:</strong> una señal estadística no debe convertirse automáticamente en culpabilización de una persona. Primero se deben revisar datos, método de medición, condiciones de operación y diseño del subgrupo racional.</div>
+    </section>
+
+    <section id="zonas" class="card">
+      <h2>2. Zonas del gráfico X̄</h2>
+      <p>Para analizar patrones se divide cada lado de la línea central en tres zonas. En esta lección se usa una escala estandarizada donde la línea central es 0 y los límites de control están en ±3 desviaciones estándar.</p>
+      <div class="grid">
+        <div class="col-4"><h3>Zona C</h3><p>Desde la línea central hasta ±1σ. Es la zona más cercana al promedio del proceso.</p><span class="pill ok">0 a ±1σ</span></div>
+        <div class="col-4"><h3>Zona B</h3><p>Entre ±1σ y ±2σ. Una concentración persistente en esta zona ya puede ser sospechosa.</p><span class="pill warn">±1σ a ±2σ</span></div>
+        <div class="col-4"><h3>Zona A</h3><p>Entre ±2σ y ±3σ. Puntos repetidos en esta zona sugieren una señal fuerte de causa atribuible.</p><span class="pill danger">±2σ a ±3σ</span></div>
+      </div>
+      <div class="chart-shell">
+        <canvas id="zoneCanvas" width="1100" height="360" aria-label="Esquema de zonas del gráfico de control"></canvas>
+        <div class="legend"><span><i class="sw c"></i>Zona C</span><span><i class="sw b"></i>Zona B</span><span><i class="sw a"></i>Zona A</span></div>
+      </div>
+    </section>
+
+    <section id="patrones" class="card">
+      <h2>3. Patrones típicos de fuera de control</h2>
+      <p>Seleccioná un caso. Cada gráfico muestra 30 puntos de medias muestrales X̄. Los valores son didácticos y están expresados como desviaciones respecto de la línea central.</p>
+      <div class="buttons" id="patternButtons"></div>
+      <div class="grid" style="margin-top:16px">
+        <div class="col-7">
+          <div class="chart-shell">
+            <canvas id="chartCanvas" width="1100" height="430" aria-label="Gráfico de control X barra con 30 puntos"></canvas>
+            <div class="legend"><span><i class="sw c"></i>Zona C</span><span><i class="sw b"></i>Zona B</span><span><i class="sw a"></i>Zona A</span><span class="small">LCS/LCL = ±3σ</span></div>
+          </div>
+        </div>
+        <div class="col-5">
+          <h3 id="patternName" class="pattern-title"></h3>
+          <p id="patternRule"></p>
+          <h3>Lectura del gráfico</h3>
+          <p id="patternInterpretation"></p>
+          <h3>Preguntas iniciales</h3>
+          <ul id="patternQuestions"></ul>
+        </div>
+      </div>
+      <div class="note"><strong>Criterio operativo:</strong> ante una señal, no conviene “tocar la máquina” sin analizar. Primero hay que verificar medición, registro, subgrupos, turnos, materia prima, método, ambiente y mantenimiento.</div>
+    </section>
+
+    <section id="acciones" class="card">
+      <h2>4. ¿Qué se hace después del análisis de patrones?</h2>
+      <p>El gráfico de control indica que hay una señal. Luego comienza el trabajo de análisis del problema. En ese punto se combinan herramientas cualitativas y cuantitativas.</p>
+      <div class="flow">
+        <div class="step">1. Señal en gráfico de control</div><div class="arrow">→</div>
+        <div class="step">2. Verificación de datos</div><div class="arrow">→</div>
+        <div class="step">3. Estratificación</div><div class="arrow">→</div>
+        <div class="step">4. Pareto</div><div class="arrow">→</div>
+        <div class="step">5. Ishikawa</div><div class="arrow">→</div>
+        <div class="step">6. 5 Porqués</div><div class="arrow">→</div>
+        <div class="step">7. Acción correctiva</div><div class="arrow">→</div>
+        <div class="step">8. Nuevo monitoreo</div>
+      </div>
+      <div class="grid" style="margin-top:18px">
+        <div class="col-6">
+          <h3>Herramientas para ordenar evidencia</h3>
+          <table>
+            <thead><tr><th>Herramienta</th><th>Uso luego de la señal</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Hoja de inspección</strong></td><td>Recolecta datos comparables: fecha, turno, máquina, lote, proveedor, operador, condición ambiental y defecto.</td></tr>
+              <tr><td><strong>Estratificación</strong></td><td>Separa la información por fuente probable de variabilidad: turno, línea, materia prima, proveedor, método o equipo.</td></tr>
+              <tr><td><strong>Pareto</strong></td><td>Permite priorizar las pocas causas o defectos que explican la mayor parte del impacto.</td></tr>
+              <tr><td><strong>Dispersión</strong></td><td>Explora relaciones entre variables: temperatura, velocidad, presión, concentración, humedad, tiempo de operación.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-6">
+          <h3>Herramientas para buscar causa raíz</h3>
+          <table>
+            <thead><tr><th>Herramienta</th><th>Uso luego de la señal</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Ishikawa</strong></td><td>Organiza hipótesis de causa en categorías como Máquina, Método, Mano de obra, Materiales, Medio ambiente y Medición.</td></tr>
+              <tr><td><strong>5 Porqués</strong></td><td>Profundiza desde el síntoma hacia mecanismos verificables. Cada “por qué” debe sostenerse con evidencia.</td></tr>
+              <tr><td><strong>Lluvia de ideas</strong></td><td>Genera hipótesis, pero no las confirma. Requiere contraste con datos.</td></tr>
+              <tr><td><strong>Plan de acción</strong></td><td>Define responsable, acción, plazo, indicador de verificación y nuevo control estadístico.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="definition"><strong>Regla práctica:</strong> el gráfico de control detecta la señal; las herramientas de análisis explican la causa; el plan de acción modifica el sistema; el nuevo gráfico verifica si la mejora fue efectiva.</div>
+    </section>
+
+    <section id="actividad" class="card">
+      <h2>5. Actividad de cierre</h2>
+      <p>Completá tus datos y respondé el cuestionario. La calificación sugerida se calcula automáticamente y podés guardar un informe local para entregar.</p>
+      <div class="grid">
+        <div class="col-4"><label>Apellido y nombre<input id="studentName" type="text" placeholder="APELLIDO, Nombre"></label></div>
+        <div class="col-4"><label>DNI<input id="studentDni" type="text" placeholder="DNI"></label></div>
+        <div class="col-4"><label>Correo<input id="studentEmail" type="email" placeholder="correo@ejemplo.com"></label></div>
+      </div>
+      <div id="quiz"></div>
+      <button onclick="gradeQuiz()">Calcular calificación sugerida</button>
+      <button onclick="downloadReport()">Guardar informe</button>
+      <button onclick="resetProgress()">Reiniciar</button>
+      <div id="result" class="result"></div>
+      <div class="rubric">
+        <div><strong>9-10</strong><br>Reconoce patrones y propone análisis posterior con evidencia.</div>
+        <div><strong>7-8</strong><br>Reconoce la mayoría de las señales y selecciona herramientas pertinentes.</div>
+        <div><strong>4-6</strong><br>Comprende la idea general, pero confunde reglas o acciones posteriores.</div>
+        <div><strong>0-3</strong><br>Necesita reforzar zonas, corridas, tendencias y diferencia entre señal y causa.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Lección interactiva para Control Estadístico de Procesos · UNLa · LUMCA · Prof. Ing. Juan M. Alderete
+  </footer>
+
+<script>
+const patterns = [
+  {
+    id:'stable', label:'Proceso estable',
+    name:'Caso 0 · Sin señal evidente',
+    rule:'No se observa ninguna regla de fuera de control. Los puntos fluctúan alrededor de la línea central dentro de los límites.',
+    interpretation:'La variación parece compatible con causas fortuitas. El proceso puede seguir monitoreándose sin ajustes innecesarios.',
+    data:[.15,-.22,.38,-.41,.63,-.18,.11,.44,-.57,.26,-.36,.59,.04,-.46,.31,.12,-.28,.52,-.09,.39,-.61,.22,.08,-.33,.47,-.15,.29,-.52,.36,-.07],
+    q:['¿La recolección de datos mantiene subgrupos racionales?','¿Los límites se calcularon con un período estable?','¿Hay capacidad suficiente además de estabilidad?']
+  },
+  {
+    id:'outside', label:'Punto fuera de límites',
+    name:'Caso 1 · Un punto fuera de los límites de control',
+    rule:'Uno o más puntos caen fuera del LCS o del LCL.',
+    interpretation:'Es una señal intensa y puntual. Puede estar asociada a evento excepcional, error de medición, cambio brusco de materia prima, falla de equipo o registro incorrecto.',
+    data:[.2,-.3,.5,-.6,.4,.1,-.2,.3,-.5,.6,.2,-.4,.5,-.1,.3,3.35,.4,-.2,.1,-.5,.6,-.3,.2,.4,-.4,.1,-.2,.5,-.1,.3],
+    q:['¿El punto extremo coincide con cambio de lote, turno o proveedor?','¿Hubo ajuste, limpieza o mantenimiento antes de ese punto?','¿Se verificó instrumento, unidad de medida y transcripción?']
+  },
+  {
+    id:'zoneA', label:'3 en Zona A',
+    name:'Caso 2 · Tres puntos seguidos en Zona A de un mismo lado',
+    rule:'Tres puntos consecutivos aparecen en Zona A del mismo lado de la línea central.',
+    interpretation:'Aunque no superen el límite, puntos tan alejados y consecutivos son poco compatibles con variación fortuita. Sugieren desplazamiento del proceso.',
+    data:[.1,-.2,.4,-.5,.2,.3,-.4,.6,-.1,.2,.5,-.3,.1,2.25,2.45,2.32,.4,-.2,.3,-.1,.2,.5,-.3,.1,-.4,.3,.2,-.2,.4,-.1],
+    q:['¿Hubo cambio de set point o ajuste de máquina?','¿La media del proceso se desplazó hacia arriba o abajo?','¿Se mantienen iguales los criterios de medición?']
+  },
+  {
+    id:'zoneB', label:'4 de 5 en Zona B+',
+    name:'Caso 3 · Cuatro de cinco puntos en Zona B o más allá',
+    rule:'Cuatro de cinco puntos consecutivos caen del mismo lado de la línea central en Zona B o más allá.',
+    interpretation:'Indica una concentración inusual de puntos relativamente alejados del centro. Es una señal de desplazamiento moderado persistente.',
+    data:[.2,-.1,.3,-.5,.4,.1,-.3,.2,.5,-.4,.2,1.35,1.65,1.82,.72,1.55,.2,-.3,.4,-.2,.1,.5,-.4,.2,-.1,.3,-.2,.4,.1,-.3],
+    q:['¿La señal aparece en un turno, máquina o materia prima específica?','¿Hay cambio gradual de calibración o desgaste?','¿La muestra se tomó siempre con el mismo método?']
+  },
+  {
+    id:'nine', label:'9 del mismo lado',
+    name:'Caso 4 · Nueve puntos consecutivos del mismo lado',
+    rule:'Nueve puntos consecutivos caen del mismo lado de la línea central.',
+    interpretation:'Señala corrimiento de la media. Aunque los puntos estén cerca del centro, la probabilidad de que tantos queden del mismo lado por azar es baja.',
+    data:[-.3,.2,-.1,.4,-.2,.3,-.4,.2,-.1,.38,.52,.61,.44,.73,.58,.49,.67,.55,.41,-.3,.2,-.1,.4,-.2,.3,-.4,.2,-.1,.3,-.2],
+    q:['¿Se recalculó la línea central con datos mezclados de dos condiciones?','¿Apareció una nueva condición de proceso?','¿La especificación o el objetivo operativo cambió?']
+  },
+  {
+    id:'trend', label:'6 en tendencia',
+    name:'Caso 5 · Seis puntos consecutivos ascendiendo o descendiendo',
+    rule:'Seis puntos consecutivos aumentan o disminuyen en forma sostenida.',
+    interpretation:'Suele indicar deriva, calentamiento, enfriamiento, desgaste, acumulación, fatiga o cambio progresivo de una variable de proceso.',
+    data:[.2,-.1,.3,-.4,.5,.1,-.2,.3,-.5,.2,-1.25,-.85,-.45,-.05,.42,.91,.3,-.2,.4,-.1,.2,-.3,.5,-.4,.1,.3,-.2,.4,-.1,.2],
+    q:['¿Hay desgaste de herramienta, acumulación o deriva térmica?','¿Cambió la velocidad, presión, temperatura o concentración?','¿La tendencia se repite al inicio o final del turno?']
+  },
+  {
+    id:'alternating', label:'14 alternando',
+    name:'Caso 6 · Catorce puntos ascendiendo y descendiendo alternativamente',
+    rule:'Catorce puntos consecutivos alternan subida y bajada.',
+    interpretation:'Puede sugerir sobreajuste, alternancia de dos condiciones, cambios sistemáticos entre operadores, lotes, instrumentos o máquinas.',
+    data:[.1,-.2,.3,-.1,.2,-.3,.4,-.2,1.05,-1.0,1.15,-1.1,1.2,-1.05,1.18,-1.22,1.08,-1.12,1.16,-1.08,1.12,-1.18,.2,-.3,.4,-.2,.1,-.1,.3,-.2],
+    q:['¿Se están alternando dos máquinas, líneas, instrumentos u operadores?','¿Hay ajustes excesivos punto a punto?','¿El orden de muestreo mezcla dos poblaciones diferentes?']
+  },
+  {
+    id:'zoneC', label:'15 en Zona C',
+    name:'Caso 7 · Quince puntos consecutivos en Zona C',
+    rule:'Quince puntos consecutivos caen dentro de la Zona C, por encima o por debajo de la línea central.',
+    interpretation:'Parece “demasiado bueno” para ser aleatorio. Puede indicar límites mal calculados, datos redondeados, pérdida de sensibilidad de medición o mezcla artificial de datos.',
+    data:[1.7,-1.4,1.2,-1.6,1.4,-1.3,.22,-.18,.31,-.27,.16,.08,-.35,.24,-.12,.29,-.21,.14,-.32,.19,.25,-.17,.11,-.28,.34,-.16,.2,1.5,-1.35,1.65],
+    q:['¿Los límites de control son demasiado amplios?','¿Se redondean o suavizan datos antes de graficarlos?','¿El instrumento tiene resolución suficiente para detectar variación real?']
+  }
+];
+
+const quizQuestions = [
+  {q:'¿Qué indica principalmente el análisis de patrones?', opts:['La causa raíz exacta del problema','Una señal estadística que requiere investigación','La especificación comercial del producto'], a:1},
+  {q:'Si 9 puntos consecutivos caen del mismo lado de la línea central, la interpretación más razonable es:', opts:['Posible corrimiento de la media','Proceso perfectamente estable','Error seguro del operador'], a:0},
+  {q:'Después de detectar una señal en el gráfico de control, lo más correcto es:', opts:['Ajustar la máquina inmediatamente','Verificar datos y luego investigar causas con herramientas de análisis','Eliminar el punto y continuar'], a:1},
+  {q:'¿Qué herramienta ayuda a ordenar posibles causas por Máquina, Método, Materiales, Medición, Medio ambiente y Mano de obra?', opts:['Ishikawa','Histograma','Carta X̄ solamente'], a:0},
+  {q:'¿Para qué se utiliza Pareto luego de una señal?', opts:['Para calcular los límites de control','Para priorizar defectos o causas de mayor impacto','Para reemplazar el muestreo'], a:1}
+];
+
+let currentPattern = 0;
+
+function yToPix(y, h, top, bottom){
+  const max=3.6, min=-3.6;
+  return top + (max-y)*(h-top-bottom)/(max-min);
+}
+function drawBase(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  const left=58,right=24,top=24,bottom=48, plotW=w-left-right, plotH=h-top-bottom;
+  function band(y1,y2,color){ctx.fillStyle=color;ctx.fillRect(left,yToPix(y1,h,top,bottom),plotW,yToPix(y2,h,top,bottom)-yToPix(y1,h,top,bottom));}
+  band(3,2,'#ffd6d2'); band(2,1,'#fff1c7'); band(1,0,'#dff7ed'); band(0,-1,'#dff7ed'); band(-1,-2,'#fff1c7'); band(-2,-3,'#ffd6d2');
+  ctx.strokeStyle='#d5e5e0';ctx.lineWidth=1;
+  for(let y=-3;y<=3;y++){
+    const py=yToPix(y,h,top,bottom); ctx.beginPath();ctx.moveTo(left,py);ctx.lineTo(w-right,py);ctx.stroke();
+    ctx.fillStyle='#48635c';ctx.font='13px Arial';ctx.textAlign='right';ctx.textBaseline='middle';
+    const label = y===3?'LCS +3σ': y===-3?'LCL -3σ': y===0?'LC': (y>0? '+'+y+'σ': y+'σ');
+    ctx.fillText(label,left-8,py);
+  }
+  ctx.strokeStyle='#006b54';ctx.lineWidth=2;
+  let py=yToPix(0,h,top,bottom);ctx.beginPath();ctx.moveTo(left,py);ctx.lineTo(w-right,py);ctx.stroke();
+  ctx.strokeStyle='#b42318';ctx.lineWidth=2;[3,-3].forEach(y=>{let p=yToPix(y,h,top,bottom);ctx.beginPath();ctx.moveTo(left,p);ctx.lineTo(w-right,p);ctx.stroke();});
+  ctx.strokeStyle='#8fb7ad';ctx.lineWidth=1;ctx.beginPath();ctx.rect(left,top,plotW,plotH);ctx.stroke();
+  return {left,right,top,bottom,plotW,plotH};
+}
+function drawChart(canvasId,data,highlightRule=true){
+  const canvas=document.getElementById(canvasId); const ctx=canvas.getContext('2d'); const w=canvas.width, h=canvas.height;
+  const p=drawBase(ctx,w,h); const step=p.plotW/(data.length-1);
+  ctx.strokeStyle='#005a49';ctx.lineWidth=3;ctx.beginPath();
+  data.forEach((v,i)=>{const x=p.left+i*step, y=yToPix(v,h,p.top,p.bottom); if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);}); ctx.stroke();
+  data.forEach((v,i)=>{const x=p.left+i*step, y=yToPix(v,h,p.top,p.bottom); ctx.beginPath(); ctx.arc(x,y,5.2,0,Math.PI*2); ctx.fillStyle=(Math.abs(v)>3?'#b42318':'#006b54'); ctx.fill(); ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.stroke();});
+  ctx.fillStyle='#48635c';ctx.font='12px Arial';ctx.textAlign='center';ctx.textBaseline='top';
+  for(let i=0;i<data.length;i+=5){ctx.fillText(String(i+1),p.left+i*step,h-34)}
+  ctx.fillStyle='#17312b';ctx.font='bold 14px Arial';ctx.fillText('Subgrupo / muestra',w/2,h-18);
+  ctx.save();ctx.translate(16,h/2);ctx.rotate(-Math.PI/2);ctx.fillText('X̄ estandarizada',0,0);ctx.restore();
+}
+function drawZones(){
+  const data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  drawChart('zoneCanvas',data,false);
+}
+function setPattern(idx){
+  currentPattern=idx; const p=patterns[idx];
+  document.querySelectorAll('#patternButtons button').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  document.getElementById('patternName').textContent=p.name;
+  document.getElementById('patternRule').innerHTML='<strong>Regla:</strong> '+p.rule;
+  document.getElementById('patternInterpretation').textContent=p.interpretation;
+  const ul=document.getElementById('patternQuestions'); ul.innerHTML=''; p.q.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});
+  drawChart('chartCanvas',p.data,true);
+  localStorage.setItem('patrones_selected',idx);
+}
+function initButtons(){
+  const box=document.getElementById('patternButtons');
+  patterns.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.label;b.onclick=()=>setPattern(i);box.appendChild(b);});
+}
+function initQuiz(){
+  const qbox=document.getElementById('quiz');
+  quizQuestions.forEach((item,i)=>{
+    const div=document.createElement('div');div.className='quiz-item';
+    div.innerHTML='<strong>'+(i+1)+'. '+item.q+'</strong>';
+    item.opts.forEach((opt,j)=>{
+      const lab=document.createElement('label');
+      lab.innerHTML='<input type="radio" name="q'+i+'" value="'+j+'"> '+opt;
+      div.appendChild(lab);
+    });
+    qbox.appendChild(div);
+  });
+}
+function gradeQuiz(){
+  let ok=0;
+  quizQuestions.forEach((item,i)=>{const sel=document.querySelector('input[name="q'+i+'"]:checked'); if(sel && Number(sel.value)===item.a) ok++;});
+  const grade=Math.round((ok/quizQuestions.length)*10);
+  const name=document.getElementById('studentName').value || 'Estudiante';
+  const result=document.getElementById('result'); result.style.display='block';
+  result.innerHTML='<h3>Resultado</h3><p><strong>'+name+'</strong>: '+ok+' respuestas correctas de '+quizQuestions.length+'.</p><p class="pill '+(grade>=7?'ok':grade>=4?'warn':'danger')+'">Calificación sugerida: '+grade+'/10</p><p>Esta calificación es orientativa. Se recomienda complementarla con una breve justificación escrita sobre el patrón elegido y la herramienta posterior de análisis.</p>';
+  localStorage.setItem('patrones_grade',grade); localStorage.setItem('patrones_ok',ok);
+}
+function downloadReport(){
+  const name=document.getElementById('studentName').value || 'Sin nombre';
+  const dni=document.getElementById('studentDni').value || 'Sin DNI';
+  const email=document.getElementById('studentEmail').value || 'Sin correo';
+  const grade=localStorage.getItem('patrones_grade') || 'No calculada';
+  const ok=localStorage.getItem('patrones_ok') || 'No calculado';
+  const p=patterns[currentPattern];
+  const text=`Informe de desempeño - Análisis de patrones en gráficos de control\n\nEstudiante: ${name}\nDNI: ${dni}\nCorreo: ${email}\n\nPatrón revisado al guardar: ${p.name}\nRegla: ${p.rule}\nInterpretación: ${p.interpretation}\n\nCuestionario: ${ok} respuestas correctas de ${quizQuestions.length}\nCalificación sugerida: ${grade}/10\n\nHerramientas posteriores recomendadas: verificación de datos, estratificación, Pareto, Ishikawa, 5 Porqués y plan de acción con nuevo monitoreo.\n\nFecha de generación: ${new Date().toLocaleString('es-AR')}`;
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='informe_analisis_patrones.txt'; a.click(); URL.revokeObjectURL(a.href);
+}
+function resetProgress(){localStorage.removeItem('patrones_grade');localStorage.removeItem('patrones_ok');document.getElementById('result').style.display='none';document.querySelectorAll('input[type="radio"]').forEach(x=>x.checked=false);}
+window.addEventListener('load',()=>{initButtons();initQuiz();drawZones();const saved=Number(localStorage.getItem('patrones_selected')||0);setPattern(saved);});
+</script>
+</body>
+</html>
