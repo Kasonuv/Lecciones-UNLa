@@ -40,6 +40,64 @@
     footer{margin-top:28px;color:#667085;font-size:12.5px;text-align:center}.hidden{display:none!important}
     @media(max-width:980px){.layout{grid-template-columns:1fr}aside{position:static;border-right:none;border-bottom:1px solid var(--line)}.hero,.grid.two,.grid.three,.studentbar{grid-template-columns:1fr}.topbar{align-items:flex-start}.actions{width:100%;justify-content:flex-start}.logo{width:64px;height:64px;font-size:21px}main{padding:20px 14px}.brand h1{font-size:19px}}
     @media print{header,aside,.noprint,.btn{display:none!important}.layout{display:block}.section{display:block!important;page-break-inside:auto}main{padding:0}.card{box-shadow:none;border:1px solid #ccc;margin-bottom:14px}.reportbox{border:none}.onlyprint{display:block!important}}
+
+
+    /* Impresión robusta del informe: evita PDF en blanco y solo imprime la sección Informe */
+    body.printing-report header,
+    body.printing-report aside,
+    body.printing-report .noprint,
+    body.printing-report .tooltip{
+      display:none!important;
+    }
+    body.printing-report .layout{
+      display:block!important;
+      max-width:none!important;
+      min-height:auto!important;
+    }
+    body.printing-report main{
+      padding:0!important;
+      margin:0!important;
+    }
+    body.printing-report .section{
+      display:none!important;
+    }
+    body.printing-report #informe{
+      display:block!important;
+      animation:none!important;
+    }
+    body.printing-report #informe .card{
+      box-shadow:none!important;
+      border:none!important;
+      padding:0!important;
+      margin:0!important;
+      border-radius:0!important;
+    }
+    body.printing-report #reportBox{
+      display:block!important;
+      color:#111!important;
+      background:#fff!important;
+      border:none!important;
+      min-height:auto!important;
+      white-space:pre-wrap!important;
+      font-size:12pt!important;
+      line-height:1.45!important;
+      padding:0!important;
+    }
+
+    @media print{
+      @page{margin:18mm}
+      body.printing-report{background:#fff!important;color:#111!important}
+      body.printing-report header,
+      body.printing-report aside,
+      body.printing-report .noprint,
+      body.printing-report .tooltip{display:none!important}
+      body.printing-report .layout{display:block!important;max-width:none!important;min-height:auto!important}
+      body.printing-report main{padding:0!important;margin:0!important}
+      body.printing-report .section{display:none!important}
+      body.printing-report #informe{display:block!important;animation:none!important}
+      body.printing-report #informe .card{box-shadow:none!important;border:none!important;padding:0!important;margin:0!important;border-radius:0!important}
+      body.printing-report #reportBox{display:block!important;color:#111!important;background:#fff!important;border:none!important;min-height:auto!important;white-space:pre-wrap!important;font-size:12pt!important;line-height:1.45!important;padding:0!important}
+    }
   </style>
 </head>
 <body>
@@ -256,7 +314,7 @@
         <div class="actions noprint" style="justify-content:flex-start;margin-bottom:14px">
           <button class="btn primary" onclick="generateReport()">Actualizar informe</button>
           <button class="btn" onclick="downloadReport()">Descargar informe HTML</button>
-          <button class="btn" onclick="window.print()">Imprimir / guardar PDF</button>
+          <button class="btn" onclick="printReportPDF()">Imprimir / guardar PDF</button>
         </div>
         <div class="reportbox" id="reportBox">Presione “Actualizar informe”.</div>
       </div>
@@ -307,14 +365,23 @@ function resetQuiz(){document.querySelectorAll('#quizContainer input').forEach(i
 function suggestedGrade(){const q=state.quizScore ?? 0; const graph=state.completed.grafico?100:0; const refl=(document.getElementById('reflection').value.trim().length>=120)?100:(document.getElementById('reflection').value.trim().length>=50?70:0); return Math.round(q*0.70+graph*0.15+refl*0.15);}
 function gradeText(g){if(g>=90)return 'Excelente dominio conceptual y operativo.'; if(g>=75)return 'Buen desempeño general; conviene reforzar precisión interpretativa.'; if(g>=60)return 'Desempeño aceptable; requiere revisar modelos y lectura de riesgos.'; return 'Desempeño insuficiente; se recomienda rehacer la lección y repetir la actividad.';}
 function generateReport(){markActivity('informe'); const g=suggestedGrade(); const n=document.getElementById('n').value,c=document.getElementById('c').value,N=document.getElementById('N').value,model=document.getElementById('model').value; const aql=+document.getElementById('aql').value,ltpd=+document.getElementById('ltpd').value; const paA=paAt(aql),paL=paAt(ltpd); const lines=[]; lines.push('INFORME DE ACTIVIDAD — CCO Y PLANES DE MUESTREO'); lines.push('Calidad 4.0 UNLa — LUMCA'); lines.push('Prof. Ing. Juan M. Alderete, PhD'); lines.push(''); lines.push('Estudiante: '+(document.getElementById('studentName').value||'Sin completar')); lines.push('Curso / comisión: '+(document.getElementById('studentCourse').value||'Sin completar')); lines.push('Fecha: '+(document.getElementById('studentDate').value||new Date().toLocaleDateString('es-AR'))); lines.push(''); lines.push('PLAN Y MODELO UTILIZADO'); lines.push(`Modelo: ${model==='binomial'?'Binomial':'Hipergeométrico'}`); lines.push(`n = ${n}; c = ${c}; N = ${N}`); lines.push(`NCA = ${fmt(aql,2)}%; Pa(NCA) = ${fmt(paA,4)}; α = ${fmt(1-paA,4)}`); lines.push(`PDTL = ${fmt(ltpd,2)}%; Pa(PDTL) = ${fmt(paL,4)}; β = ${fmt(paL,4)}`); lines.push(''); lines.push('LECTURA CONCEPTUAL DEL ESTUDIANTE'); lines.push(document.getElementById('reflection').value.trim() || 'Sin respuesta registrada.'); lines.push(''); lines.push('RESULTADO DE ACTIVIDAD'); lines.push(`Cuestionario autocorregido: ${state.quizScore===null?'Sin corregir':state.quizScore+'%'}`); lines.push(`Calificación sugerida final: ${g}/100`); lines.push(`Observación: ${gradeText(g)}`); lines.push(''); lines.push('CRITERIO DE CALIFICACIÓN SUGERIDO'); lines.push('70% cuestionario autocorregido; 15% uso del graficador; 15% respuesta conceptual escrita.'); document.getElementById('reportBox').textContent=lines.join('\n'); updateProgress(); saveSession(false);}
+
+function printReportPDF(){
+  // Primero arma el informe, luego imprime solo esa sección.
+  generateReport();
+  go('informe');
+  document.body.classList.add('printing-report');
+  setTimeout(()=>window.print(), 150);
+}
+window.addEventListener('afterprint',()=>document.body.classList.remove('printing-report'));
 function downloadCSV(){if(!state.ocData.length) calculateOC(); let csv='p_porcentaje,Pa\n'+state.ocData.map(d=>`${d.pct},${d.pa}`).join('\n'); downloadBlob(csv,'tabla_cco.csv','text/csv;charset=utf-8');}
 function downloadReport(){generateReport(); const html=`<!doctype html><html><head><meta charset="utf-8"><title>Informe CCO</title><style>body{font-family:Arial,sans-serif;line-height:1.5;padding:32px;color:#111}h1{color:#970033}pre{white-space:pre-wrap;border:1px solid #ddd;padding:18px;border-radius:12px}</style></head><body><h1>Informe CCO y Planes de Muestreo</h1><pre>${escapeHtml(document.getElementById('reportBox').textContent)}</pre></body></html>`; downloadBlob(html,'informe_cco.html','text/html;charset=utf-8');}
 function downloadBlob(content,name,type){const blob=new Blob([content],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
 function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
-function saveSession(alertUser=true){const data={state, fields:{studentName:studentName.value,studentCourse:studentCourse.value,studentDate:studentDate.value,reflection:reflection.value,model:model.value,n:n.value,c:c.value,N:N.value,pmax:pmax.value,pstep:pstep.value,aql:aql.value,ltpd:ltpd.value,pread:pread.value}}; localStorage.setItem('cco_unla_session',JSON.stringify(data)); if(alertUser) alert('Sesión guardada en este navegador.');}
+function saveSession(alertUser=true){const v=id=>document.getElementById(id).value; const data={state, fields:{studentName:v('studentName'),studentCourse:v('studentCourse'),studentDate:v('studentDate'),reflection:v('reflection'),model:v('model'),n:v('n'),c:v('c'),N:v('N'),pmax:v('pmax'),pstep:v('pstep'),aql:v('aql'),ltpd:v('ltpd'),pread:v('pread')}}; localStorage.setItem('cco_unla_session',JSON.stringify(data)); if(alertUser) alert('Sesión guardada en este navegador.');}
 function loadSession(alertUser=false){const raw=localStorage.getItem('cco_unla_session'); if(!raw){if(alertUser) alert('No hay sesión guardada.'); return;} const data=JSON.parse(raw); Object.assign(state,data.state||{}); Object.entries(data.fields||{}).forEach(([k,v])=>{if(document.getElementById(k))document.getElementById(k).value=v;}); calculateOC(); if(alertUser) alert('Sesión recuperada.'); updateProgress();}
 function clearSession(){if(confirm('¿Desea limpiar la sesión y reiniciar la actividad?')){localStorage.removeItem('cco_unla_session'); location.reload();}}
-(function init(){studentDate.value=new Date().toISOString().slice(0,10); buildQuiz(); calculateOC(); loadSession(false); updateProgress();})();
+(function init(){document.getElementById('studentDate').value=new Date().toISOString().slice(0,10); buildQuiz(); calculateOC(); loadSession(false); updateProgress();})();
 </script>
 </body>
 </html>
