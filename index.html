@@ -3,176 +3,138 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lecciones UNLa | Calidad</title>
+  <title>Lecciones UNLa - Calidad</title>
 
   <style>
     :root {
-      --unla-verde: #006b3f;
-      --unla-verde-oscuro: #004d2f;
-      --unla-dorado: #f2b705;
-      --fondo: #f4f7f6;
-      --texto: #1f2933;
-      --gris: #6b7280;
+      --azul-unla: #005baa;
+      --celeste-unla: #00a3e0;
+      --verde-acento: #00a878;
+      --gris-fondo: #f4f7fb;
+      --gris-texto: #263238;
       --blanco: #ffffff;
-      --borde: #d8e2dc;
+      --sombra: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #f4f7f6 0%, #e8f1ed 100%);
-      color: var(--texto);
+      background: linear-gradient(135deg, var(--gris-fondo), #ffffff);
+      color: var(--gris-texto);
+      min-height: 100vh;
     }
 
     header {
-      background: linear-gradient(135deg, var(--unla-verde), var(--unla-verde-oscuro));
-      color: var(--blanco);
-      padding: 48px 24px;
+      background: linear-gradient(135deg, var(--azul-unla), var(--celeste-unla));
+      color: white;
+      padding: 42px 24px;
       text-align: center;
-      border-bottom: 6px solid var(--unla-dorado);
     }
 
     header h1 {
-      margin: 0;
-      font-size: 2.4rem;
+      font-size: 2.2rem;
+      margin-bottom: 10px;
       letter-spacing: 0.5px;
     }
 
     header p {
-      margin: 14px auto 0;
-      max-width: 760px;
       font-size: 1.05rem;
-      line-height: 1.5;
       opacity: 0.95;
     }
 
     main {
       max-width: 1100px;
-      margin: 0 auto;
-      padding: 42px 22px 60px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
     .intro {
       background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 18px;
-      padding: 26px;
+      border-left: 6px solid var(--verde-acento);
+      padding: 22px 26px;
+      border-radius: 14px;
+      box-shadow: var(--sombra);
       margin-bottom: 30px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
     }
 
     .intro h2 {
-      margin-top: 0;
-      color: var(--unla-verde-oscuro);
-      font-size: 1.5rem;
+      color: var(--azul-unla);
+      margin-bottom: 8px;
+      font-size: 1.35rem;
     }
 
     .intro p {
-      margin-bottom: 0;
       line-height: 1.6;
-      color: #374151;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
+      gap: 22px;
     }
 
     .card {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      text-decoration: none;
       background: var(--blanco);
-      border: 1px solid var(--borde);
-      border-radius: 20px;
-      padding: 26px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 7px;
-      background: linear-gradient(90deg, var(--unla-verde), var(--unla-dorado));
+      color: var(--gris-texto);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: var(--sombra);
+      border: 1px solid rgba(0, 91, 170, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 12px 30px rgba(0, 91, 170, 0.16);
+      border: 1px solid rgba(0, 163, 224, 0.35);
     }
 
-    .badge {
-      display: inline-block;
-      background: #e7f4ee;
-      color: var(--unla-verde-oscuro);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      margin-bottom: 14px;
+    .card-icon {
+      font-size: 2.1rem;
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 163, 224, 0.12);
+      flex-shrink: 0;
     }
 
-    .card h3 {
-      margin: 0 0 12px;
-      color: var(--unla-verde-oscuro);
-      font-size: 1.35rem;
+    .card-content h2 {
+      color: var(--azul-unla);
+      font-size: 1.22rem;
+      margin-bottom: 8px;
     }
 
-    .card p {
-      color: #4b5563;
-      line-height: 1.55;
-      margin-bottom: 22px;
-    }
-
-    .btn {
-      display: inline-block;
-      text-decoration: none;
-      background: var(--unla-verde);
-      color: var(--blanco);
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: bold;
-      transition: background 0.2s ease, transform 0.2s ease;
-    }
-
-    .btn:hover {
-      background: var(--unla-verde-oscuro);
-      transform: scale(1.03);
-    }
-
-    .footer {
-      margin-top: 42px;
-      padding-top: 24px;
-      border-top: 1px solid var(--borde);
-      color: var(--gris);
-      font-size: 0.92rem;
-      text-align: center;
+    .card-content p {
+      font-size: 0.96rem;
       line-height: 1.5;
     }
 
-    .footer strong {
-      color: var(--unla-verde-oscuro);
+    footer {
+      text-align: center;
+      color: #607d8b;
+      padding: 28px 20px 36px;
+      font-size: 0.9rem;
     }
 
-    @media (max-width: 640px) {
+    @media (max-width: 600px) {
       header h1 {
-        font-size: 1.9rem;
+        font-size: 1.7rem;
       }
 
-      header {
-        padding: 36px 18px;
-      }
-
-      main {
-        padding: 30px 16px 48px;
+      .card {
+        flex-direction: column;
       }
     }
   </style>
@@ -180,53 +142,61 @@
 
 <body>
   <header>
-    <h1>Lecciones Interactivas UNLa</h1>
-    <p>
-      Repositorio de recursos didácticos digitales para el abordaje de herramientas de calidad,
-      muestreo, control estadístico y análisis aplicado.
-    </p>
+    <h1>Lecciones interactivas UNLa</h1>
+    <p>Materiales digitales para el aprendizaje aplicado de herramientas de calidad</p>
   </header>
 
   <main>
     <section class="intro">
-      <h2>Materiales disponibles</h2>
+      <h2>Repositorio de lecciones</h2>
       <p>
-        Seleccioná una lección para comenzar. Cada recurso está pensado como una experiencia
-        de aprendizaje autónoma, con desarrollo conceptual, actividades y apoyo visual para
-        facilitar la comprensión progresiva de los temas.
+        Seleccioná una lección para ingresar al material interactivo correspondiente.
+        Estas actividades están orientadas a fortalecer la comprensión conceptual,
+        la interpretación de resultados y la aplicación práctica de herramientas de calidad.
       </p>
     </section>
 
     <section class="grid">
 
-      <article class="card">
-        <span class="badge">Calidad · Muestreo</span>
-        <h3>Curva Característica de Operación</h3>
-        <p>
-          Lección introductoria sobre la CCO, su construcción, lectura e interpretación
-          para comprender la probabilidad de aceptación de lotes en función de la calidad real.
-        </p>
-        <a class="btn" href="CCO.html">Abrir lección</a>
-      </article>
+      <a class="card" href="LECCI%C3%93N%20MUESTREO.html">
+        <div class="card-icon">📋</div>
+        <div class="card-content">
+          <h2>Lección de muestreo</h2>
+          <p>
+            Introducción conceptual al muestreo de aceptación, sus fundamentos,
+            criterios de decisión y relación con los planes de inspección.
+          </p>
+        </div>
+      </a>
 
-      <article class="card">
-        <span class="badge">Calidad · Planes de muestreo</span>
-        <h3>Muestreo de aceptación</h3>
-        <p>
-          Lección sobre fundamentos del muestreo de aceptación, lectura de tablas,
-          criterios de decisión y relación con el nivel de calidad aceptable.
-        </p>
-        <a class="btn" href="LECCI%C3%93N%20MUESTREO.html">Abrir lección</a>
-      </article>
+      <a class="card" href="CCO.html">
+        <div class="card-icon">📊</div>
+        <div class="card-content">
+          <h2>Curvas Características de Operación</h2>
+          <p>
+            Lección sobre construcción, interpretación y uso de las CCO en planes
+            de muestreo, con énfasis en NCA, PDTL y probabilidades de aceptación.
+          </p>
+        </div>
+      </a>
 
-    </section>
+      <a class="card" href="ANALISIS%20DE%20PATRONES.html">
+        <div class="card-icon">📈</div>
+        <div class="card-content">
+          <h2>Análisis de patrones</h2>
+          <p>
+            Lección interactiva sobre interpretación de patrones en gráficos de control,
+            detección de señales no aleatorias y vinculación con herramientas como
+            Ishikawa, 5 Porqués y Pareto.
+          </p>
+        </div>
+      </a>
 
-    <section class="footer">
-      <p>
-        <strong>Universidad Nacional de Lanús</strong><br />
-        Recursos digitales para la enseñanza de Calidad.
-      </p>
     </section>
   </main>
+
+  <footer>
+    Universidad Nacional de Lanús · Material didáctico para Calidad
+  </footer>
 </body>
 </html>
